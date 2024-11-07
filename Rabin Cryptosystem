@@ -1,0 +1,66 @@
+import random
+from sympy import isprime, mod_inverse
+
+def generate_keys(bit_length=512):
+    # Generate two distinct large prime numbers p and q
+    while True:
+        p = random.getrandbits(bit_length)
+        if isprime(p) and p % 4 == 3:
+            break
+
+    while True:
+        q = random.getrandbits(bit_length)
+        if isprime(q) and q % 4 == 3 and p != q:
+            break
+
+    n = p * q
+    return (n, p, q)
+
+def encrypt(n, plaintext):
+    # Convert plaintext to integer
+    m = int.from_bytes(plaintext.encode('utf-8'), byteorder='big')
+    # Ciphertext calculation: c = m^2 mod n
+    c = pow(m, 2, n)
+    return c
+
+def decrypt(n, p, q, ciphertext):
+    # Compute the square roots modulo p and q
+    mp = pow(ciphertext, (p + 1) // 4, p)
+    mq = pow(ciphertext, (q + 1) // 4, q)
+
+    # Use the extended Euclidean algorithm to find coefficients
+    yp = mod_inverse(p, q)
+    yq = mod_inverse(q, p)
+
+    # Calculate the four possible roots
+    r1 = (yp * p * mq + yq * q * mp) % n
+    r2 = n - r1
+    r3 = (yp * p * mq - yq * q * mp) % n
+    r4 = n - r3
+
+    # Convert back to string (decode) and return all possible plaintexts
+    roots = [r1, r2, r3, r4]
+    plaintexts = []
+
+    for root in roots:
+        try:
+            # Convert integer back to bytes and decode as UTF-8
+            plaintext = int.to_bytes(root, (root.bit_length() + 7) // 8, byteorder='big').decode('utf-8')
+            plaintexts.append(plaintext)
+        except UnicodeDecodeError:
+            # Skip invalid roots that don't decode properly
+            pass
+
+    return plaintexts
+
+# Example usage:
+bit_length = 512
+public_key, p, q = generate_keys(bit_length)
+n = public_key
+
+message = "Hello, Rabin!"
+ciphertext = encrypt(n, message)
+print("Ciphertext:", ciphertext)
+
+possible_plaintexts = decrypt(n, p, q, ciphertext)
+print("Possible plaintexts:", possible_plaintexts)
