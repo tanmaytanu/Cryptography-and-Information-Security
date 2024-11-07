@@ -1,0 +1,32 @@
+# Import necessary modules
+import base64
+from Crypto.Cipher import DES
+
+# This is the key for encryption (must be 8 bytes for DES)
+key = 'hello123'  # 8-byte key for DES encryption
+
+# Function to pad the plaintext to be a multiple of 8 bytes
+def pad(text):
+    while len(text) % 8 != 0:
+        text = text + ' '  # Padding with spaces
+    return text
+
+# Create the DES cipher object in ECB mode
+des = DES.new(key.encode('utf-8'), DES.MODE_ECB)
+
+# Example plaintext
+text = 'Hello World'
+padded_text = pad(text)
+
+# Encrypt the padded plaintext
+encrypted_text = des.encrypt(padded_text.encode('utf-8'))
+
+# Display encrypted text in raw binary and base64-encoded formats
+print("The Encrypted text (raw):", encrypted_text)
+print("The Encrypted text (Base64):", base64.b64encode(encrypted_text).decode())
+
+# Decrypt the encrypted message
+decrypted_text = des.decrypt(encrypted_text)
+
+# Strip any padding spaces that were added during encryption
+print("The Decrypted text:", decrypted_text.decode().rstrip())
