@@ -1,0 +1,50 @@
+#Encryption Function
+def encryption(plaintext, key1, key2):
+    text = plaintext.lower()
+    ciphertext = ""
+    for char in text:
+        order = ord(char)
+        #Range for lowercase letter is 97 to 122
+        if order>=97 and order<=122:
+            order = order - 97
+            order = ((order * key1) + key2) % 26
+            order = order + 97
+            new_char = chr(order)
+            ciphertext = ciphertext + new_char
+        else :
+            ciphertext = ciphertext + char
+    return ciphertext
+
+#Decrption Function
+def decryption(ciphertext, key1, key2):
+    text = ciphertext.upper()
+    #finding the inverse of key1 mod 26
+    key1_inv = pow(key1, -1, 26)
+    plaintext = ""
+    for char in text:
+        order = ord(char)
+        #Range for uppercase letter is 65 to 90
+        if order>=65 and order<=90:
+            order = order - 65
+            order = ((order - key2) * key1_inv) % 26
+            order = order + 65
+            new_char = chr(order)
+            plaintext = plaintext + new_char
+        else:
+            plaintext = plaintext + char
+    return plaintext
+
+#Input section
+plaintext = input("Enter the plaintext: ")
+key1 = int(input("Enter the first key: "))
+key2 = int(input("Enter the second key : "))
+
+#Function calling
+ciphertext = encryption(plaintext, key1, key2)
+decrypted_text = decryption(ciphertext, key1, key2)
+
+#Output Section
+print("Entered plaintext: ", plaintext)
+print("Entered keys are: \nkey1 = ", key1, "\nkey2 = ", key2)
+print("Ciphertext : ", ciphertext)
+print("Decrypted text : ", decrypted_text)
