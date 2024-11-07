@@ -1,0 +1,39 @@
+#Encryption Function
+def encrypt(plaintext,key):
+    plaintext = plaintext.upper()
+    ciphertext = ""
+    for i in range(len(plaintext)):
+        char = plaintext[i]
+        if char == ' ':
+            shifted_char = char
+        else:
+            shifted_char = chr((ord(char) - 65 + key) % 26)
+            shifted_char = chr(ord(shifted_char) + 65)
+        ciphertext = ciphertext + shifted_char
+    return ciphertext
+
+#Decryption Function
+def decrypt(ciphertext,key):
+    ciphertext = ciphertext.lower()
+    decrypted_text = ""
+    for i in range(len(ciphertext)):
+        char = ciphertext[i]
+        if char == ' ':
+            shifted_char = char
+        else:
+            shifted_char = chr((ord(char) - 97 - key) % 26)
+            shifted_char = chr(ord(shifted_char) + 97)
+        decrypted_text = decrypted_text + shifted_char
+    return decrypted_text
+
+#Input
+plaintext = input("Enter the plaintext: ")
+print("Entered plaintext = " + plaintext)
+key = int(input("Enter the key: "))
+print("Entered key = " + str(key))
+
+#Output
+ciphertext = encrypt(plaintext, key)
+print("Ciphertext = " + ciphertext)
+decrypted_text = decrypt(ciphertext, key)
+print("Decrypted text = " + decrypted_text)
